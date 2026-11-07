@@ -1,107 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>INTER CON ROLO</title>
-<style>
-body{font-family:Arial;margin:0;background:#eef2f6;color:#17283a}
-header{background:#102b46;color:white;text-align:center;padding:22px}
-main{max-width:850px;margin:auto;padding:15px}
-section{background:white;padding:16px;margin:12px 0;border-radius:12px}
-input,select,button{padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
-input{max-width:100%;width:90%}
-button{background:#1769aa;color:white;border:0;font-weight:bold}
-.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.seat{background:#edf5fb;padding:12px;border-radius:8px;min-height:45px}
-table{width:100%;border-collapse:collapse}
-td,th{padding:9px;border-bottom:1px solid #ddd;text-align:left}
-.small{font-size:12px;color:#64748b}
-</style>
-</head>
-<body>
-<header>
-<h1>INTER CON ROLO</h1>
-<p>TORNEO DE 18 PUESTOS</p>
-</header>
-<main>
-<section>
-<h2>Configuración</h2>
-<label>Monto del torneo (Gs.)</label><br>
-<input id="monto" type="number" value="100000"><br>
-<label>Alias de pago</label><br>
-<input id="alias" placeholder="Escribir alias"><br>
-<button onclick="guardarConfig()">Guardar configuración</button>
-<p id="aviso" class="small"></p>
-</section>
-
-<section>
-<h2>Administrar jugadores</h2>
-<input id="nombre" placeholder="Nombre del jugador"><br>
-<input id="puesto" type="number" min="1" max="18" placeholder="Puesto del 1 al 18"><br>
-<button onclick="agregar()">Agregar jugador</button>
-<h3>Registrar puntos</h3>
-<select id="tipo">
-<option value="1">Banca comprada: +1</option>
-<option value="1">11/1 con resultado 2, 3, 4, 5, 6, 8, 9 o 10: +1</option>
-<option value="2">11/1 pierde: +2</option>
-<option value="3">11/1 viene 7: +3</option>
-</select><br>
-<button onclick="sumar()">Registrar puntos</button>
-</section>
-
-<section>
-<h2>Los 18 puestos</h2>
-<div class="seats" id="puestos"></div>
-</section>
-
-<section>
-<h2>Ranking general</h2>
-<p>Premio total: <b>Gs. 3.000.000</b></p>
-<p class="small">Los jugadores deciden si reparten el premio o lo lleva uno solo.</p>
-<table>
-<thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead>
-<tbody id="ranking"></tbody>
-</table>
-</section>
-</main>
-
-<script>
-let jugadores=JSON.parse(localStorage.getItem("interRoloJugadores")||"{}");
-function guardar(){localStorage.setItem("interRoloJugadores",JSON.stringify(jugadores))}
-function guardarConfig(){
-localStorage.setItem("interRoloMonto",document.getElementById("monto").value);
-localStorage.setItem("interRoloAlias",document.getElementById("alias").value);
-document.getElementById("aviso").textContent="Configuración guardada.";
-}
-document.getElementById("monto").value=localStorage.getItem("interRoloMonto")||100000;
-document.getElementById("alias").value=localStorage.getItem("interRoloAlias")||"";
-function agregar(){
-let n=Number(document.getElementById("puesto").value);
-let nombre=document.getElementById("nombre").value.trim();
-if(n<1||n>18||!Number.isInteger(n))return alert("Puesto inválido.");
-if(!nombre)return alert("Escribí el nombre.");
-if(jugadores[n])return alert("Ese puesto ya está ocupado.");
-jugadores[n]={nombre,puntos:0};guardar();mostrar();
-document.getElementById("nombre").value="";
-}
-function sumar(){
-let n=Number(document.getElementById("puesto").value);
-if(!jugadores[n])return alert("Ese puesto no tiene jugador.");
-jugadores[n].puntos+=Number(document.getElementById("tipo").value);
-guardar();mostrar();
-}
-function mostrar(){
-let p=document.getElementById("puestos");
-p.innerHTML="";
-for(let i=1;i<=18;i++){
-let j=jugadores[i];
-p.innerHTML+=`<div class="seat"><b>Puesto ${i}</b><br>${j?j.nombre+" · "+j.puntos+" pts":"Disponible"}</div>`;
-}
-let lista=Object.values(jugadores).sort((a,b)=>b.puntos-a.puntos);
-document.getElementById("ranking").innerHTML=lista.map((j,i)=>`<tr><td>${i+1}</td><td>${j.nombre}</td><td>${j.puntos}</td></tr>`).join("");
-}
-mostrar();
-</script>
-</body>
-</html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INTER CON ROLO</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#182534;font:16px system-ui}header{background:#102b46;color:white;text-align:center;padding:20px}main{max-width:900px;margin:auto;padding:14px}.panel{background:white;border:1px solid #dce4ed;border-radius:12px;padding:14px;margin:12px 0}h2{color:#102b46;font-size:19px}input,select{padding:10px;border:1px solid #ccd5df;border-radius:8px;width:100%;margin:4px 0 10px}button{padding:10px 13px;border:0;border-radius:8px;background:#1769aa;color:white;font-weight:600;margin:4px}button.red{background:#a93232}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.seat{background:#eef5fa;border:1px solid #dce4ed;border-radius:8px;padding:9px;min-height:65px}.seat b{display:block}.muted{font-size:12px;color:#64748b}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd;font-size:14px}.hidden{display:none!important}@media(min-width:650px){.seats{grid-template-columns:repeat(6,1fr)}.grid{grid-template-columns:repeat(3,1fr)}}
+</style></head><body><header><h1>INTER CON ROLO</h1><div>Torneo de 18 puestos</div></header><main>
+<div id="status" class="panel">Conectando con Firebase…</div>
+<section class="panel"><h2>Datos del torneo</h2><div class="grid"><label>Monto (Gs.)<input id="amount" type="number" value="100000" disabled></label><label>Alias de pago<input id="alias" placeholder="Alias editable" disabled></label></div><p class="muted">Premio total: Gs. 3.000.000. Los jugadores deciden si lo reparten o lo lleva uno solo.</p></section>
+<section class="panel"><h2>18 puestos</h2><div id="seats" class="seats"></div></section>
+<section class="panel"><h2>Ranking</h2><div style="overflow-x:auto"><table><thead><tr><th>Pos.</th><th>Jugador</th><th>Puntos</th><th>Pago</th><th>Premio</th></tr></thead><tbody id="ranking"></tbody></table></div></section>
+<section class="panel"><h2>Acceso del organizador</h2><div id="loginbox"><label>Correo<input id="email" type="email"></label><label>Contraseña<input id="password" type="password"></label><button id="login">Ingresar</button><span id="loginmsg" class="muted"></span></div><div id="admin" class="hidden"><p class="muted">Solo el organizador autenticado puede editar.</p><div class="grid"><label>Nombre<input id="name" placeholder="Nombre"></label><label>Puesto<input id="seat" type="number" min="1" max="18"></label><label>Movimiento<select id="kind"><option value="banca">Banca comprada +1</option><option value="win">11/1 con 2,3,4,5,6,8,9,10 +1</option><option value="lose">11/1 pierde +2</option><option value="seven">11/1 viene 7 +3</option><option value="manual">Ajuste manual</option></select></label><label id="manualbox" class="hidden">Puntos manuales (+/-)<input id="manual" type="number" step=".5" value="0"></label></div><button id="add">Agregar jugador</button><button id="points">Registrar puntos</button><button id="paid">Marcar pagado/confirmado</button><button id="release">Liberar puesto</button><button id="edit">Editar puntos</button><button id="settings">Guardar monto y alias</button><button id="start">Iniciar torneo</button><button id="reset" class="red">Reiniciar torneo</button><button id="logout">Cerrar sesión</button></div></section>
+<p class="muted">Puntajes: banca +1; 11/1 con 2,3,4,5,6,8,9 o 10 +1; 11/1 pierde +2 (suma, no resta); 11/1 viene 7 +3.</p></main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import{getFirestore,doc,onSnapshot,setDoc}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyDQYUVR-DFF8cYmhrPNvb8Ysw9j11XFaOI",authDomain:"inter-con-rolo.firebaseapp.com",projectId:"inter-con-rolo",storageBucket:"inter-con-rolo.firebasestorage.app",messagingSenderId:"68803082506",appId:"1:68803082506:web:76338d063d910404fd62f3",measurementId:"G-DV3NHSKL2K"};
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),ref=doc(db,"torneos","principal");let data={players:{},amount:100000,alias:"",started:false},admin=false;
+const $=x=>document.getElementById(x),safe=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function draw(){$("amount").value=data.amount??100000;$("alias").value=data.alias||"";$("seats").innerHTML=Array.from({length:18},(_,i)=>{let p=data.players?.[i+1];return `<div class="seat"><b>Puesto ${i+1}</b>${p?safe(p.name)+"<br>"+(p.points||0)+" pts"+(p.paid?" · PAGADO":""):"Disponible"}</div>`}).join("");let a=Object.entries(data.players||{}).map(([n,p])=>({n:+n,...p})).sort((x,y)=>(y.points||0)-(x.points||0)||x.n-y.n);$("ranking").innerHTML=a.map((p,i)=>`<tr><td>${i+1}</td><td>${safe(p.name)}</td><td>${p.points||0}</td><td>${p.paid?"Confirmado":"Pendiente"}</td><td>${i<3?["1.º lugar","2.º lugar","3.º lugar"][i]:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Sin jugadores registrados</td></tr>'}
+async function save(){if(!admin)throw Error("Solo organizador");await setDoc(ref,data)}
+onSnapshot(ref,s=>{if(s.exists())data={...data,...s.data()};draw();$("status").textContent="Conectado: datos sincronizados en tiempo real."},e=>{$("status").textContent="No se pudo conectar. Revisá las reglas de Firestore.";console.error(e)});
+onAuthStateChanged(auth,u=>{admin=!!u;$("loginbox").classList.toggle("hidden",admin);$("admin").classList.toggle("hidden",!admin);$("amount").disabled=!admin;$("alias").disabled=!admin});
+$("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginmsg").textContent="Acceso correcto"}catch(e){$("loginmsg").textContent="Error de acceso: revisá correo y contraseña"}};
+$("logout").onclick=()=>signOut(auth);$("kind").onchange=()=>$("manualbox").classList.toggle("hidden",$("kind").value!=="manual");
+$("add").onclick=async()=>{let n=+$("seat").value,name=$("name").value.trim();if(!Number.isInteger(n)||n<1||n>18||!name)return alert("Ingresá nombre y puesto válido.");if(data.players[n])return alert("Puesto ocupado.");data.players[n]={name,points:0,paid:false};try{await save();$("name").value=""}catch(e){alert(e.message)}};
+$("points").onclick=async()=>{let p=data.players[+$("seat").value];if(!p)return alert("Elegí un puesto ocupado.");let d=({banca:1,win:1,lose:2,seven:3,manual:+$("manual").value||0})[$("kind").value];p.points=(+p.points||0)+d;try{await save();alert("Puntos registrados: "+(d>0?"+":"")+d)}catch(e){alert(e.message)}};
+$("paid").onclick=async()=>{let p=data.players[+$("seat").value];if(!p)return alert("Elegí un puesto ocupado.");p.paid=!p.paid;try{await save()}catch(e){alert(e.message)}};
+$("release").onclick=async()=>{let n=+$("seat").value;if(!data.players[n])return alert("Puesto vacío.");if(confirm("¿Liberar este puesto?")){delete data.players[n];try{await save()}catch(e){alert(e.message)}}};
+$("edit").onclick=async()=>{let p=data.players[+$("seat").value];if(!p)return alert("Elegí un puesto ocupado.");let v=prompt("Nuevo puntaje total",p.points||0);if(v===null||v.trim()===""||!Number.isFinite(+v))return;p.points=+v;try{await save()}catch(e){alert(e.message)}};
+$("settings").onclick=async()=>{data.amount=Math.max(0,+$("amount").value||0);data.alias=$("alias").value.trim();try{await save();alert("Monto y alias guardados")}catch(e){alert(e.message)}};
+$("start").onclick=async()=>{data.started=true;try{await save();alert("Torneo iniciado")}catch(e){alert(e.message)}};
+$("reset").onclick=async()=>{if(confirm("¿Borrar todos los jugadores y puntajes?")){data={players:{},amount:100000,alias:"",started:false};try{await save()}catch(e){alert(e.message)}}};
+draw();
+</script></body></html>
