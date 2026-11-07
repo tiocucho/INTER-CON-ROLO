@@ -1,1 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>INTER CON ROLO</title>
+<style>
+body{font-family:Arial;margin:0;background:#eef2f6;color:#17283a}
+header{background:#102b46;color:white;text-align:center;padding:22px}
+main{max-width:850px;margin:auto;padding:15px}
+section{background:white;padding:16px;margin:12px 0;border-radius:12px}
+input,select,button{padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
+input{max-width:100%;width:90%}
+button{background:#1769aa;color:white;border:0;font-weight:bold}
+.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seat{background:#edf5fb;padding:12px;border-radius:8px;min-height:45px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:9px;border-bottom:1px solid #ddd;text-align:left}
+.small{font-size:12px;color:#64748b}
+</style>
+</head>
+<body>
+<header>
+<h1>INTER CON ROLO</h1>
+<p>TORNEO DE 18 PUESTOS</p>
+</header>
+<main>
+<section>
+<h2>Configuración</h2>
+<label>Monto del torneo (Gs.)</label><br>
+<input id="monto" type="number" value="100000"><br>
+<label>Alias de pago</label><br>
+<input id="alias" placeholder="Escribir alias"><br>
+<button onclick="guardarConfig()">Guardar configuración</button>
+<p id="aviso" class="small"></p>
+</section>
 
+<section>
+<h2>Administrar jugadores</h2>
+<input id="nombre" placeholder="Nombre del jugador"><br>
+<input id="puesto" type="number" min="1" max="18" placeholder="Puesto del 1 al 18"><br>
+<button onclick="agregar()">Agregar jugador</button>
+<h3>Registrar puntos</h3>
+<select id="tipo">
+<option value="1">Banca comprada: +1</option>
+<option value="1">11/1 con resultado 2, 3, 4, 5, 6, 8, 9 o 10: +1</option>
+<option value="2">11/1 pierde: +2</option>
+<option value="3">11/1 viene 7: +3</option>
+</select><br>
+<button onclick="sumar()">Registrar puntos</button>
+</section>
+
+<section>
+<h2>Los 18 puestos</h2>
+<div class="seats" id="puestos"></div>
+</section>
+
+<section>
+<h2>Ranking general</h2>
+<p>Premio total: <b>Gs. 3.000.000</b></p>
+<p class="small">Los jugadores deciden si reparten el premio o lo lleva uno solo.</p>
+<table>
+<thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead>
+<tbody id="ranking"></tbody>
+</table>
+</section>
+</main>
+
+<script>
+let jugadores=JSON.parse(localStorage.getItem("interRoloJugadores")||"{}");
+function guardar(){localStorage.setItem("interRoloJugadores",JSON.stringify(jugadores))}
+function guardarConfig(){
+localStorage.setItem("interRoloMonto",document.getElementById("monto").value);
+localStorage.setItem("interRoloAlias",document.getElementById("alias").value);
+document.getElementById("aviso").textContent="Configuración guardada.";
+}
+document.getElementById("monto").value=localStorage.getItem("interRoloMonto")||100000;
+document.getElementById("alias").value=localStorage.getItem("interRoloAlias")||"";
+function agregar(){
+let n=Number(document.getElementById("puesto").value);
+let nombre=document.getElementById("nombre").value.trim();
+if(n<1||n>18||!Number.isInteger(n))return alert("Puesto inválido.");
+if(!nombre)return alert("Escribí el nombre.");
+if(jugadores[n])return alert("Ese puesto ya está ocupado.");
+jugadores[n]={nombre,puntos:0};guardar();mostrar();
+document.getElementById("nombre").value="";
+}
+function sumar(){
+let n=Number(document.getElementById("puesto").value);
+if(!jugadores[n])return alert("Ese puesto no tiene jugador.");
+jugadores[n].puntos+=Number(document.getElementById("tipo").value);
+guardar();mostrar();
+}
+function mostrar(){
+let p=document.getElementById("puestos");
+p.innerHTML="";
+for(let i=1;i<=18;i++){
+let j=jugadores[i];
+p.innerHTML+=`<div class="seat"><b>Puesto ${i}</b><br>${j?j.nombre+" · "+j.puntos+" pts":"Disponible"}</div>`;
+}
+let lista=Object.values(jugadores).sort((a,b)=>b.puntos-a.puntos);
+document.getElementById("ranking").innerHTML=lista.map((j,i)=>`<tr><td>${i+1}</td><td>${j.nombre}</td><td>${j.puntos}</td></tr>`).join("");
+}
+mostrar();
+</script>
+</body>
+</html>
