@@ -1,15 +1,34 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    match /torneos/principal {
-      allow read: if true;
-
-      allow create, update, delete: if request.auth != null
+    function isAdmin() {
+      return request.auth != null
         && request.auth.uid == "NAPeaYlBl4aQtamvQH70RylIpVV2";
     }
-
+    match /torneos/principal {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+    match /reservas/{seat} {
+      allow read: if true;
+      allow create: if request.auth == null
+        && seat.matches('^(?:[1-9]|1[0-8])$')
+        && !exists(/databases/$(database)/documents/reservas/$(seat))
+        && request.resource.data.keys().hasOnly(['seat','name','points','paid','createdAt'])
+        && request.resource.data.seat == int(seat)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 50
+        && request.resource.data.points == 0
+        && request.resource.data.paid == false
+        && request.resource.data.createdAt is timestamp
+        && (
+          !exists(/databases/$(database)/documents/torneos/principal)
+          || !get(/databases/$(database)/documents/torneos/principal).data.keys().hasAny(['players'])
+          || !get(/databases/$(database)/documents/torneos/principal).data.players.keys().hasAny([seat])
+        );
+      allow update, delete: if isAdmin();
+    }
     match /{document=**} {
       allow read, write: if false;
     }
