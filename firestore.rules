@@ -5,12 +5,18 @@ service cloud.firestore {
       return request.auth != null
         && request.auth.uid == "NAPeaYlBl4aQtamvQH70RylIpVV2";
     }
+
     match /torneos/principal {
       allow read: if true;
       allow create, update, delete: if isAdmin();
     }
+
     match /reservas/{seat} {
       allow read: if true;
+
+      // Los jugadores solo pueden crear una reserva nueva cuando el organizador
+      // no haya bloqueado las reservas. La comprobación se hace en Firebase,
+      // no solamente en la pantalla pública.
       allow create: if request.auth == null
         && seat.matches('^(?:[1-9]|1[0-8])$')
         && !exists(/databases/$(database)/documents/reservas/$(seat))
@@ -24,11 +30,18 @@ service cloud.firestore {
         && request.resource.data.createdAt is timestamp
         && (
           !exists(/databases/$(database)/documents/torneos/principal)
+          || !get(/databases/$(database)/documents/torneos/principal).data.keys().hasAny(['reservasBloqueadas'])
+          || get(/databases/$(database)/documents/torneos/principal).data.reservasBloqueadas == false
+        )
+        && (
+          !exists(/databases/$(database)/documents/torneos/principal)
           || !get(/databases/$(database)/documents/torneos/principal).data.keys().hasAny(['players'])
           || !get(/databases/$(database)/documents/torneos/principal).data.players.keys().hasAny([seat])
         );
+
       allow update, delete: if isAdmin();
     }
+
     match /{document=**} {
       allow read, write: if false;
     }
