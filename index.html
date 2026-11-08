@@ -1,44 +1,23 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INTER CON ROLO</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#182534;font:16px system-ui}header{background:#102b46;color:#fff;text-align:center;padding:18px}main{max-width:900px;margin:auto;padding:12px}.panel{background:#fff;border:1px solid #dce4ed;border-radius:12px;padding:16px;margin:12px 0}h2{font-size:19px;color:#102b46;margin-top:0}button{padding:10px 13px;border:0;border-radius:8px;background:#1769aa;color:#fff;font-weight:600;margin:4px;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.seat{background:#eef5fa;border:1px solid #dce4ed;border-radius:8px;padding:10px;min-height:82px}.busy{background:#eee}.muted{font-size:13px;color:#64748b}.status{font-weight:700}.locked{color:#a93232}.bank{background:#111;color:#f7f3e9;border:1px solid #8a7548;border-radius:22px;padding:22px;margin:12px 0}.bank h2{color:#f0d080;font-size:25px}.bank p{font-size:18px;margin:18px 0}.bank strong{color:#fff}.bank .hint{color:#c4bdb5;font-size:15px}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd}.tablewrap{overflow-x:auto}@media(min-width:650px){.seats{grid-template-columns:repeat(6,1fr)}}@media(max-width:420px){.grid{grid-template-columns:1fr}.bank p{font-size:16px}}
-</style></head><body>
-<header><h1>INTER CON ROLO</h1><div>Torneo de 18 puestos</div></header><main>
-<div id="status" class="panel status">Conectando con el torneo…</div>
-<section class="panel"><h2>Datos del torneo</h2><p><b>Monto:</b> <span id="amount">—</span></p><p><b>Premio total anunciado:</b> Gs. 3.000.000</p></section>
-<section class="bank"><h2>💳 Datos para transferencia</h2><div class="hint">Verificá el alias que muestra el organizador antes de transferir.</div><p><strong>Alias:</strong> <span id="alias">—</span></p><p><strong>Titular:</strong> <span id="holder">—</span></p><p><strong>Banco:</strong> <span id="bank">—</span></p></section>
-<section class="panel"><h2>Elegí tu puesto</h2><p id="bookingMessage">Elegí un puesto disponible y escribí tu nombre para reservarlo.</p><div id="seats" class="seats"></div></section>
-<section class="panel"><h2>Ranking</h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Pago</th></tr></thead><tbody id="ranking"><tr><td colspan="4">Cargando…</td></tr></tbody></table></div></section>
-<p class="muted">Las reservas y los cambios del torneo se actualizan automáticamente.</p>
-</main>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INTER CON ROLO</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#182534;font:16px system-ui}header{background:#102b46;color:white;text-align:center;padding:18px}main{max-width:900px;margin:auto;padding:12px}.panel{background:white;border:1px solid #dce4ed;border-radius:12px;padding:16px;margin:12px 0}h2{font-size:19px;color:#102b46;margin-top:0}button{padding:10px 13px;border:0;border-radius:8px;background:#1769aa;color:white;font-weight:600;margin:4px}.seats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.seat{background:#eef5fa;border:1px solid #dce4ed;border-radius:8px;padding:10px;min-height:82px}.busy{background:#eee}.muted{font-size:13px;color:#64748b}.bank{background:#111;color:#f7f3e9;border:1px solid #8a7548;border-radius:22px;padding:22px}.bank h2{color:#f0d080}.bank p{font-size:18px}.bank strong{color:white}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd}.tablewrap{overflow-x:auto}.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.dialog{background:white;border-radius:14px;padding:18px;width:min(420px,100%)}input,select{width:100%;padding:11px;border:1px solid #ccd5df;border-radius:8px;margin:5px 0 12px}.hidden{display:none}@media(min-width:650px){.seats{grid-template-columns:repeat(6,1fr)}}
+</style></head><body><header><h1>INTER CON ROLO</h1><div>Torneo de 18 puestos</div></header><main>
+<div id="status" class="panel">Conectando…</div><section class="panel"><h2>Datos del torneo</h2><b>Monto:</b> <span id="amount">—</span></section>
+<section class="bank"><h2>💳 Datos para transferencia</h2><p><strong>Alias:</strong> <span id="alias">—</span></p><p><strong>Titular:</strong> <span id="holder">—</span></p><p><strong>Banco:</strong> <span id="bank">—</span></p></section>
+<section class="panel"><h2>Elegí tu puesto</h2><p id="bookingMessage"></p><div id="seats" class="seats"></div></section>
+<section class="panel"><h2>Ranking individual</h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Jugador</th><th>Puesto</th><th>Puntos</th><th>Pago</th></tr></thead><tbody id="ranking"></tbody></table></div></section></main>
+<div class="modal" id="modal"><div class="dialog"><h2>Reservar puesto <span id="seatNo"></span></h2><label>Modalidad<select id="mode"><option value="solo">Solo</option><option value="family">Familia (2 personas)</option></select></label><label>Primera persona<input id="name1" maxlength="50"></label><label id="secondLabel" class="hidden">Segunda persona<input id="name2" maxlength="50"></label><button id="confirm">Confirmar reserva</button><button id="cancel" style="background:#64748b">Cancelar</button></div></div>
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import{getFirestore,doc,collection,onSnapshot,setDoc}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";import{getFirestore,doc,collection,onSnapshot,setDoc}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyDQYUVR-DFF8cYmhrPNvb8Ysw9j11XFaOI",authDomain:"inter-con-rolo.firebaseapp.com",projectId:"inter-con-rolo",storageBucket:"inter-con-rolo.firebasestorage.app",messagingSenderId:"68803082506",appId:"1:68803082506:web:76338d063d910404fd62f3"};
-const app=initializeApp(cfg),db=getFirestore(app),mainRef=doc(db,"torneos","principal"),resRef=collection(db,"reservas");
-let data={players:{},amount:100000,alias:"",holder:"José Alfredo Alfonso",bank:"Familiar",reservasBloqueadas:false},reservas={};
+const db=getFirestore(initializeApp(cfg)),mainRef=doc(db,"torneos","principal"),resRef=collection(db,"reservas");let data={players:{},amount:100000},reservas={},chosen=null;
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function all(){let p={...(data.players||{})};for(const [k,v] of Object.entries(reservas))p[k]={...v};return p}
-function draw(){
- $("amount").textContent="Gs. "+Number(data.amount||0).toLocaleString("es-PY");
- $("alias").textContent=data.alias||"No configurado";$("holder").textContent=data.holder||"No configurado";$("bank").textContent=data.bank||"No configurado";
- const locked=!!data.reservasBloqueadas;
- $("bookingMessage").textContent=locked?"🔒 Las reservas están temporalmente bloqueadas por el organizador.": "Elegí un puesto disponible y escribí tu nombre para reservarlo.";
- $("bookingMessage").className=locked?"locked":"";
- const p=all();
- $("seats").innerHTML=Array.from({length:18},(_,i)=>{const n=String(i+1),x=p[n];return `<div class="seat ${x?"busy":""}"><b>Puesto ${n}</b><br>${x?`${esc(x.name)}<br>${Number(x.points)||0} pts<br><span class="muted">${x.paid?"Pago confirmado":"Pago pendiente"}</span>`:locked?`<span class="muted">Bloqueado</span>`:`Disponible<br><button data-n="${n}">Reservar</button>`}</div>`}).join("");
- $("seats").querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>reserve(b.dataset.n));
- const rows=Object.entries(p).map(([n,x])=>({n:+n,...x})).sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0)||a.n-b.n);
- $("ranking").innerHTML=rows.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${Number(x.points)||0}</td><td>${x.paid?"Confirmado":"Pendiente"}</td></tr>`).join("")||'<tr><td colspan="4">Todavía no hay jugadores</td></tr>';
-}
-async function reserve(n){
- if(data.reservasBloqueadas)return alert("Las reservas están bloqueadas por el organizador.");
- if(all()[n])return alert("Ese puesto ya está ocupado.");
- let name=prompt("Tu nombre para reservar el puesto "+n+":");if(name===null)return;name=name.trim();
- if(name.length<2||name.length>50)return alert("Usá un nombre de 2 a 50 caracteres.");
- try{await setDoc(doc(db,"reservas",n),{seat:Number(n),name,points:0,paid:false,createdAt:new Date()});alert("Puesto reservado. El organizador confirmará el pago.");}
- catch(e){alert("No se pudo reservar ("+(e.code||"error")+"): "+e.message);console.error(e)}
-}
-onSnapshot(mainRef,s=>{if(s.exists())data={...data,...s.data()};draw();$("status").textContent="Conectado: datos del torneo sincronizados.";},e=>$("status").textContent="Error al leer el torneo: "+e.message);
-onSnapshot(resRef,s=>{reservas={};s.forEach(d=>reservas[d.id]=d.data());draw();},e=>$("status").textContent="Error al leer reservas: "+e.message);
+function members(x){return x.mode==="family"&&x.name2?[{name:x.name,points:+x.points||0},{name:x.name2,points:+x.points2||0}]:[{name:x.name,points:+x.points||0}]}
+function all(){let p={...(data.players||{})};for(let [k,v] of Object.entries(reservas))p[k]=v;return p}
+function draw(){$("amount").textContent="Gs. "+Number(data.amount||0).toLocaleString("es-PY");$("alias").textContent=data.alias||"No configurado";$("holder").textContent=data.holder||"No configurado";$("bank").textContent=data.bank||"No configurado";let locked=!!data.reservasBloqueadas;$("bookingMessage").textContent=locked?"🔒 Reservas bloqueadas por el organizador.":"Elegí un puesto y seleccioná Solo o Familia.";
+$("seats").innerHTML=Array.from({length:18},(_,i)=>{let n=String(i+1),x=all()[n];if(!x)return `<div class="seat"><b>Puesto ${n}</b><br>${locked?"Bloqueado":`Disponible<br><button data-n="${n}">Reservar</button>`}</div>`;return `<div class="seat busy"><b>Puesto ${n} · ${x.mode==="family"?"Familia":"Solo"}</b><br>${members(x).map(p=>`${esc(p.name)} — ${p.points} pts`).join("<br>")}<br><span class="muted">${x.paid?"Pago confirmado":"Pago pendiente"}</span></div>`}).join("");$("seats").querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>open(b.dataset.n));
+let rows=[];for(let [n,x] of Object.entries(all()))for(let p of members(x))rows.push({n:+n,...p,paid:x.paid});rows.sort((a,b)=>b.points-a.points||a.n-b.n);$("ranking").innerHTML=rows.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name)}</td><td>${x.n}</td><td>${x.points}</td><td>${x.paid?"Confirmado":"Pendiente"}</td></tr>`).join("")||'<tr><td colspan="5">Todavía no hay jugadores</td></tr>'}
+function open(n){if(data.reservasBloqueadas||all()[n])return alert("Ese puesto no está disponible.");chosen=n;$("seatNo").textContent=n;$("name1").value="";$("name2").value="";$("mode").value="solo";toggle();$("modal").classList.add("show")}
+function toggle(){$("secondLabel").classList.toggle("hidden",$("mode").value!=="family")}
+$("mode").onchange=toggle;$("cancel").onclick=()=>$("modal").classList.remove("show");$("confirm").onclick=async()=>{let name=$("name1").value.trim(),name2=$("name2").value.trim(),mode=$("mode").value;if(name.length<2||name.length>50)return alert("Ingresá un nombre válido.");if(mode==="family"&&(name2.length<2||name2.length>50))return alert("Ingresá el segundo nombre.");if(all()[chosen])return alert("Puesto ocupado.");let obj={seat:+chosen,mode,name,points:0,paid:false,createdAt:new Date()};if(mode==="family"){obj.name2=name2;obj.points2=0}try{await setDoc(doc(db,"reservas",chosen),obj);$("modal").classList.remove("show");alert("Reserva realizada. El organizador confirmará el pago.")}catch(e){alert("No se pudo reservar: "+e.message)}};
+onSnapshot(mainRef,s=>{if(s.exists())data={...data,...s.data()};draw();$("status").textContent="Conectado: datos sincronizados."},e=>$("status").textContent="Error: "+e.message);onSnapshot(resRef,s=>{reservas={};s.forEach(d=>reservas[d.id]=d.data());draw()},e=>$("status").textContent="Error: "+e.message);
 </script></body></html>

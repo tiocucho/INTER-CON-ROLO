@@ -1,66 +1,37 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Organizador - INTER CON ROLO</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#182534;font:16px system-ui}header{background:#102b46;color:#fff;text-align:center;padding:18px}main{max-width:950px;margin:auto;padding:12px}.panel{background:#fff;border:1px solid #dce4ed;border-radius:12px;padding:15px;margin:12px 0}h2{font-size:19px;color:#102b46;margin-top:0}input,select{padding:10px;border:1px solid #ccd5df;border-radius:8px;width:100%;margin:4px 0 10px}label{display:block}button{padding:10px 13px;border:0;border-radius:8px;background:#1769aa;color:#fff;font-weight:600;margin:4px;cursor:pointer}.red{background:#a93232}.green{background:#247447}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.muted{font-size:13px;color:#64748b}.hidden{display:none!important}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd}.warning{background:#fff5df;border:1px solid #e7c778;padding:12px;border-radius:8px}@media(max-width:520px){.grid{grid-template-columns:1fr}}
-</style></head><body>
-<header><h1>INTER CON ROLO</h1><div>Panel privado del organizador</div></header><main>
-<div id="status" class="panel">Conectando con Firebase…</div>
-<section class="panel" id="loginbox"><h2>Acceso del organizador</h2><label>Correo<input id="email" type="email" autocomplete="username"></label><label>Contraseña<input id="password" type="password" autocomplete="current-password"></label><button id="login">Ingresar</button><span id="loginmsg" class="muted"></span></section>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Organizador - INTER CON ROLO</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5f9;color:#182534;font:16px system-ui}header{background:#102b46;color:white;text-align:center;padding:18px}main{max-width:950px;margin:auto;padding:12px}.panel{background:white;border:1px solid #dce4ed;border-radius:12px;padding:15px;margin:12px 0}h2{font-size:19px;color:#102b46;margin-top:0}input,select{padding:10px;border:1px solid #ccd5df;border-radius:8px;width:100%;margin:4px 0 10px}label{display:block}button{padding:10px 13px;border:0;border-radius:8px;background:#1769aa;color:white;font-weight:600;margin:4px}.red{background:#a93232}.green{background:#247447}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.hidden{display:none!important}.muted{font-size:13px;color:#64748b}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd}.warning{background:#fff5df;border:1px solid #e7c778;padding:12px;border-radius:8px}@media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style></head><body><header><h1>INTER CON ROLO</h1><div>Panel privado del organizador</div></header><main><div id="status" class="panel">Conectando…</div>
+<section class="panel" id="loginbox"><h2>Acceso del organizador</h2><label>Correo<input id="email" type="email"></label><label>Contraseña<input id="password" type="password"></label><button id="login">Ingresar</button><span id="loginmsg" class="muted"></span></section>
 <div id="admin" class="hidden">
-<section class="panel"><h2>Configuración del torneo</h2><div class="grid">
-<label>Monto del torneo (Gs.)<input id="amount" type="number" min="0"></label>
-<label>Alias / número<input id="alias" type="text" placeholder="Ej.: 0971367727"></label>
-<label>Titular de la cuenta<input id="holder" type="text" placeholder="Nombre y apellido"></label>
-<label>Banco<input id="bank" type="text" placeholder="Nombre del banco"></label></div><button id="settings">Guardar datos del torneo</button></section>
-<section class="panel"><h2>Reservas</h2><p id="lockState" class="muted"></p><button id="toggleLock" class="red">Bloquear reservas</button><p class="muted">Al bloquear, nadie podrá reservar puestos nuevos desde la página pública. Los puestos ocupados y el ranking seguirán visibles.</p></section>
+<section class="panel"><h2>Configuración del torneo</h2><div class="grid"><label>Monto (Gs.)<input id="amount" type="number"></label><label>Alias<input id="alias"></label><label>Titular<input id="holder"></label><label>Banco<input id="bank"></label></div><button id="settings">Guardar configuración</button></section>
+<section class="panel"><h2>Reservas</h2><p id="lockState"></p><button id="lock" class="red">Bloquear reservas</button></section>
 <section class="panel"><h2>Administrar jugadores y puntos</h2><div class="grid">
-<label>Nombre del jugador<input id="name"></label><label>Puesto (1 al 18)<input id="seat" type="number" min="1" max="18"></label>
-<label>Movimiento<select id="kind"><option value="banca">Banca comprada +1</option><option value="win">11/1 con 2,3,4,5,6,8,9,10 +1</option><option value="lose">11/1 pierde +2</option><option value="seven">11/1 viene 7 +3</option><option value="manual">Ajuste manual</option></select></label>
-<label id="manualbox" class="hidden">Puntos manuales<input id="manual" type="number" step="0.5" value="0"></label></div>
-<button id="add">Agregar jugador</button><button id="points">Registrar puntos</button><button id="paid">Confirmar / quitar pago</button><button id="release" class="red">Liberar puesto</button><button id="edit">Editar puntos totales</button>
-</section>
-<section class="panel"><h2>Jugadores actuales</h2><div class="tablewrap"><table><thead><tr><th>Puesto</th><th>Jugador</th><th>Puntos</th><th>Pago</th></tr></thead><tbody id="players"></tbody></table></div></section>
-<section class="panel"><h2>Finalizar y reiniciar torneo</h2><div class="warning"><b>Atención:</b> esta acción elimina todos los nombres, puntos, pagos y reservas. Conserva el monto y los datos bancarios. No se puede deshacer.</div><button id="reset" class="red">FINALIZAR Y REINICIAR TORNEO</button></section>
-<button id="logout" class="red">Cerrar sesión</button>
-</div></main>
+<label>Modalidad<select id="mode"><option value="solo">Solo</option><option value="family">Familia (2 personas)</option></select></label><label>Puesto 1 al 18<input id="seat" type="number" min="1" max="18"></label>
+<label>Primera persona<input id="name"></label><label id="name2box" class="hidden">Segunda persona<input id="name2"></label>
+<label>Movimiento<select id="kind"><option value="banca">Banca +1</option><option value="win">11/1 +1</option><option value="lose">11/1 pierde +2</option><option value="seven">11/1 viene 7 +3</option><option value="manual">Ajuste manual</option></select></label><label id="manualbox" class="hidden">Puntos manuales<input id="manual" type="number" step="0.5" value="0"></label></div>
+<p class="muted">Familia divide cada movimiento 50/50. Ejemplo: +1 suma 0,5 a cada integrante; +3 suma 1,5 a cada uno.</p>
+<button id="add">Agregar banca</button><button id="points">Registrar puntos</button><button id="paid">Confirmar / quitar pago</button><button id="release" class="red">Liberar puesto</button><button id="edit">Editar puntos individuales</button></section>
+<section class="panel"><h2>Jugadores actuales</h2><div class="tablewrap"><table><thead><tr><th>Puesto</th><th>Modalidad</th><th>Jugador</th><th>Puntos</th><th>Pago</th></tr></thead><tbody id="players"></tbody></table></div></section>
+<section class="panel"><h2>Finalizar y reiniciar torneo</h2><div class="warning">Elimina nombres, puntos, pagos y reservas. Conserva monto y datos bancarios.</div><button id="reset" class="red">FINALIZAR Y REINICIAR</button></section><button id="logout" class="red">Cerrar sesión</button></div></main>
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import{getFirestore,doc,collection,onSnapshot,setDoc,updateDoc,deleteDoc,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";import{getFirestore,doc,collection,onSnapshot,setDoc,updateDoc,deleteDoc,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyDQYUVR-DFF8cYmhrPNvb8Ysw9j11XFaOI",authDomain:"inter-con-rolo.firebaseapp.com",projectId:"inter-con-rolo",storageBucket:"inter-con-rolo.firebasestorage.app",messagingSenderId:"68803082506",appId:"1:68803082506:web:76338d063d910404fd62f3"},ADMIN_UID="NAPeaYlBl4aQtamvQH70RylIpVV2";
-const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),mainRef=doc(db,"torneos","principal"),resRef=collection(db,"reservas");
-let data={players:{},amount:100000,alias:"",holder:"José Alfredo Alfonso",bank:"Familiar",reservasBloqueadas:false},reservas={},isAdmin=false;
-const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function all(){let p={...(data.players||{})};for(const [k,v] of Object.entries(reservas))p[k]={...v,_public:true};return p}
-function render(){
- $("amount").value=data.amount??100000;$("alias").value=data.alias||"";$("holder").value=data.holder||"";$("bank").value=data.bank||"";
- $("lockState").textContent=data.reservasBloqueadas?"🔒 Reservas BLOQUEADAS":"🟢 Reservas HABILITADAS";
- $("toggleLock").textContent=data.reservasBloqueadas?"HABILITAR RESERVAS":"BLOQUEAR RESERVAS";$("toggleLock").className=data.reservasBloqueadas?"green":"red";
- const rows=Object.entries(all()).map(([n,x])=>({n:+n,...x})).sort((a,b)=>a.n-b.n);
- $("players").innerHTML=rows.map(x=>`<tr><td>${x.n}</td><td>${esc(x.name)}</td><td>${Number(x.points)||0}</td><td>${x.paid?"Confirmado":"Pendiente"}</td></tr>`).join("")||'<tr><td colspan="4">No hay jugadores</td></tr>';
-}
-async function saveMain(){if(!isAdmin)throw Error("Sin permiso de organizador");await setDoc(mainRef,data)}
-async function change(n,fn){if(reservas[n]){let p={...reservas[n]};fn(p);await updateDoc(doc(db,"reservas",n),p)}else{if(!data.players?.[n])throw Error("Puesto vacío");const players={...(data.players||{})};fn(players[n]);data={...data,players};await saveMain()}}
-onSnapshot(mainRef,s=>{if(s.exists())data={...data,...s.data()};render();$("status").textContent="Conectado: datos sincronizados."},e=>$("status").textContent="Error al leer el torneo: "+e.message);
-onSnapshot(resRef,s=>{reservas={};s.forEach(d=>reservas[d.id]=d.data());render()},e=>$("status").textContent="Error al leer reservas: "+e.message);
-onAuthStateChanged(auth,u=>{isAdmin=!!u&&u.uid===ADMIN_UID;$("loginbox").classList.toggle("hidden",isAdmin);$("admin").classList.toggle("hidden",!isAdmin);if(u&&!isAdmin){signOut(auth);$("loginmsg").textContent="Cuenta sin permiso de organizador."}});
-$("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginmsg").textContent=""}catch(e){$("loginmsg").textContent="No se pudo ingresar; revisá tus datos."}};
-$("logout").onclick=()=>signOut(auth);
-$("kind").onchange=()=>$("manualbox").classList.toggle("hidden",$("kind").value!=="manual");
-$("settings").onclick=async()=>{data={...data,amount:Math.max(0,Number($("amount").value)||0),alias:$("alias").value.trim(),holder:$("holder").value.trim(),bank:$("bank").value.trim()};try{await saveMain();alert("Datos del torneo guardados.")}catch(e){alert(e.message)}};
-$("toggleLock").onclick=async()=>{const next=!data.reservasBloqueadas;try{data={...data,reservasBloqueadas:next};await saveMain();alert(next?"Reservas bloqueadas.":"Reservas habilitadas.")}catch(e){alert("No se pudo cambiar el bloqueo: "+e.message)}};
-$("add").onclick=async()=>{let n=String(+$("seat").value),name=$("name").value.trim();if(!/^(?:[1-9]|1[0-8])$/.test(n)||name.length<2)return alert("Ingresá nombre y puesto válido.");if(all()[n])return alert("Puesto ocupado.");const players={...(data.players||{}),[n]:{name,points:0,paid:false}};data={...data,players};try{await saveMain();$("name").value=""}catch(e){alert(e.message)}};
-$("points").onclick=async()=>{let n=String(+$("seat").value);if(!all()[n])return alert("Puesto vacío.");let d=({banca:1,win:1,lose:2,seven:3,manual:Number($("manual").value)||0})[$("kind").value];try{await change(n,p=>p.points=(Number(p.points)||0)+d);alert("Puntos registrados: "+(d>0?"+":"")+d)}catch(e){alert(e.message)}};
+const db=getFirestore(initializeApp(cfg)),auth=getAuth(),mainRef=doc(db,"torneos","principal"),resRef=collection(db,"reservas");let data={players:{},amount:100000},reservas={},isAdmin=false;const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function people(x){return x.mode==="family"&&x.name2?[{name:x.name,points:+x.points||0},{name:x.name2,points:+x.points2||0}]:[{name:x.name,points:+x.points||0}]}
+function all(){let p={...(data.players||{})};for(let[k,v]of Object.entries(reservas))p[k]=v;return p}
+function render(){$("amount").value=data.amount??100000;$("alias").value=data.alias||"";$("holder").value=data.holder||"";$("bank").value=data.bank||"";$("lockState").textContent=data.reservasBloqueadas?"🔒 Reservas bloqueadas":"🟢 Reservas habilitadas";$("lock").textContent=data.reservasBloqueadas?"Habilitar reservas":"Bloquear reservas";let rows=[];for(let[n,x]of Object.entries(all()))for(let p of people(x))rows.push({n,mode:x.mode==="family"?"Familia":"Solo",...p,paid:x.paid});$("players").innerHTML=rows.map(x=>`<tr><td>${x.n}</td><td>${x.mode}</td><td>${esc(x.name)}</td><td>${x.points}</td><td>${x.paid?"Confirmado":"Pendiente"}</td></tr>`).join("")||'<tr><td colspan="5">No hay jugadores</td></tr>'}
+async function save(){if(!isAdmin)throw Error("Sin permiso");await setDoc(mainRef,data)}
+async function change(n,fn){if(reservas[n]){let x={...reservas[n]};fn(x);await updateDoc(doc(db,"reservas",n),x)}else{if(!data.players?.[n])throw Error("Puesto vacío");let players={...data.players};fn(players[n]);data={...data,players};await save()}}
+onSnapshot(mainRef,s=>{if(s.exists())data={...data,...s.data()};render();$("status").textContent="Conectado y sincronizado."},e=>$("status").textContent=e.message);onSnapshot(resRef,s=>{reservas={};s.forEach(d=>reservas[d.id]=d.data());render()},e=>$("status").textContent=e.message);
+onAuthStateChanged(auth,u=>{isAdmin=!!u&&u.uid===ADMIN_UID;$("loginbox").classList.toggle("hidden",isAdmin);$("admin").classList.toggle("hidden",!isAdmin);if(u&&!isAdmin)signOut(auth)});
+$("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("loginmsg").textContent="No se pudo ingresar; revisá correo y contraseña."}};$("logout").onclick=()=>signOut(auth);
+$("mode").onchange=()=>$("name2box").classList.toggle("hidden",$("mode").value!=="family");$("kind").onchange=()=>$("manualbox").classList.toggle("hidden",$("kind").value!=="manual");
+$("settings").onclick=async()=>{data={...data,amount:Math.max(0,+$("amount").value||0),alias:$("alias").value.trim(),holder:$("holder").value.trim(),bank:$("bank").value.trim()};try{await save();alert("Configuración guardada.")}catch(e){alert(e.message)}};
+$("lock").onclick=async()=>{data={...data,reservasBloqueadas:!data.reservasBloqueadas};try{await save()}catch(e){alert(e.message)}};
+$("add").onclick=async()=>{let n=String(+$("seat").value),name=$("name").value.trim(),name2=$("name2").value.trim(),mode=$("mode").value;if(!/^(?:[1-9]|1[0-8])$/.test(n)||name.length<2)return alert("Nombre y puesto válido son obligatorios.");if(mode==="family"&&name2.length<2)return alert("Falta el segundo nombre.");if(all()[n])return alert("Puesto ocupado.");let p={mode,name,points:0,paid:false};if(mode==="family"){p.name2=name2;p.points2=0}data={...data,players:{...data.players,[n]:p}};try{await save()}catch(e){alert(e.message)}};
+$("points").onclick=async()=>{let n=String(+$("seat").value);if(!all()[n])return alert("Puesto vacío.");let d=({banca:1,win:1,lose:2,seven:3,manual:+$("manual").value||0})[$("kind").value];try{await change(n,p=>{p.points=(+p.points||0)+(p.mode==="family"?d/2:d);if(p.mode==="family")p.points2=(+p.points2||0)+d/2});alert("Movimiento registrado.")}catch(e){alert(e.message)}};
 $("paid").onclick=async()=>{let n=String(+$("seat").value);if(!all()[n])return alert("Puesto vacío.");try{await change(n,p=>p.paid=!p.paid)}catch(e){alert(e.message)}};
-$("release").onclick=async()=>{let n=String(+$("seat").value);if(!all()[n]||!confirm("¿Liberar el puesto "+n+"?"))return;try{if(reservas[n])await deleteDoc(doc(db,"reservas",n));else{const players={...(data.players||{})};delete players[n];data={...data,players};await saveMain()}}catch(e){alert(e.message)}};
-$("edit").onclick=async()=>{let n=String(+$("seat").value),p=all()[n];if(!p)return alert("Puesto vacío.");let v=prompt("Nuevo puntaje total",p.points||0);if(v===null||v.trim()===""||!Number.isFinite(Number(v)))return;try{await change(n,x=>x.points=Number(v))}catch(e){alert(e.message)}};
-$("reset").onclick=async()=>{
- if(!confirm("¿Confirmás FINALIZAR el torneo y borrar todos los nombres, puntos, pagos y reservas?"))return;
- if(!confirm("Última confirmación: esta acción no se puede deshacer. ¿Reiniciar ahora?"))return;
- try{
-  const snap=await getDocs(resRef);let batch=writeBatch(db);snap.forEach(d=>batch.delete(d.ref));await batch.commit();
-  data={...data,players:{}};await saveMain();alert("Torneo reiniciado. Los puestos están libres; el monto y los datos bancarios se conservaron.");
- }catch(e){alert("No se pudo reiniciar: "+e.message)}
-};
-render();
+$("release").onclick=async()=>{let n=String(+$("seat").value);if(!all()[n]||!confirm("¿Liberar el puesto "+n+"?"))return;try{if(reservas[n])await deleteDoc(doc(db,"reservas",n));else{let players={...data.players};delete players[n];data={...data,players};await save()}}catch(e){alert(e.message)}};
+$("edit").onclick=async()=>{let n=String(+$("seat").value),p=all()[n];if(!p)return alert("Puesto vacío.");let v=prompt(p.mode==="family"?"Nuevo puntaje individual para cada integrante":"Nuevo puntaje",p.points||0);if(v===null||v.trim()===""||!Number.isFinite(+v))return;try{await change(n,x=>{x.points=+v;if(x.mode==="family")x.points2=+v})}catch(e){alert(e.message)}};
+$("reset").onclick=async()=>{if(!confirm("¿Borrar todos los jugadores, puntos, pagos y reservas?"))return;if(!confirm("Última confirmación. ¿Reiniciar?"))return;try{let snap=await getDocs(resRef),batch=writeBatch(db);snap.forEach(d=>batch.delete(d.ref));await batch.commit();data={...data,players:{}};await save();alert("Torneo reiniciado. Se conservaron monto y datos bancarios.")}catch(e){alert(e.message)}};render();
 </script></body></html>
